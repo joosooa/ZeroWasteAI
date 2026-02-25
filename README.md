@@ -5,40 +5,7 @@
 
 ## 1. Zero Waste AI 시스템 구조 (System Architecture)
 본 프로젝트는 매장 운영부터 고객 접점까지 하나로 연결된 **4단계 통합 아키텍처**로 설계되었습니다.
-
-graph TD
-    %% 스타일 정의
-    classDef store fill:#f9f,stroke:#333,stroke-width:2px,color:black;
-    classDef cloudDB fill:#d4e157,stroke:#333,stroke-width:2px,color:black;
-    classDef brain fill:#ffcccb,stroke:#333,stroke-width:2px,color:black;
-    classDef auto fill:#b3e5fc,stroke:#333,stroke-width:2px,color:black;
-    classDef mobile fill:#e1bee7,stroke:#333,stroke-width:2px,color:black;
-
-    subgraph "On-Premise (현장)"
-        Store[🏪 점포경영시스템<br/>(Local POS/ERP)]:::store
-    end
-
-    subgraph "Cloud Backend & Intelligence (핵심)"
-        Supabase[(🗄️ Supabase DB<br/>중앙 데이터 허브)]:::cloudDB
-        AI_Server[🧠 CJOneFlow AI Server<br/>(Custom API / ML 모델 / FastAPI)]:::brain
-    end
-
-    subgraph "Automation & Delivery (자동화)"
-        n8n[⚙️ n8n Orchestrator<br/>(마케팅 자동화 워크플로우)]:::auto
-    end
-
-    subgraph "Frontend (고객 접점)"
-        App[📱 뚜레쥬르 모바일 앱<br/>(Lovable / React)]:::mobile
-    end
-
-    %% 연결선
-    Store -- "1. 실시간 재고/판매 데이터 동기화" --> Supabase
-    Supabase <-- "2. 데이터 조회 & 예측 요청" --> AI_Server
-    AI_Server -- "3. 폐기 위험 감지 (EWR > 12%)<br/>트리거 신호 전송" --> n8n
-    n8n -- "4. LLM 문구 생성 요청 & 응답" --> AI_Server
-    n8n -- "5. 알림 데이터 저장 (Insert)" --> Supabase
-    Supabase == "6. Realtime WebSocket 푸시" ==> App
-
+<img src="./src/system" width="80%">
 
 
 * **점포경영시스템 (Local)**: 실시간 재고 및 판매 데이터를 생성하고 관리하는 데이터의 원천.
@@ -50,44 +17,6 @@ graph TD
 
 ## 2. 데이터 파이프라인 및 핵심 기술 (Data Flow)
 데이터가 흐르는 순서에 따라 각 단계에 적용된 핵심 기술 상세입니다.
-
-sequenceDiagram
-    autonumber
-    participant Store as 🏪 점포 시스템
-    participant DB as 🗄️ Supabase DB
-    participant AI as 🧠 AI 예측 엔진 (API)
-    participant Auto as ⚙️ n8n 자동화
-    participant App as 📱 모바일 앱
-
-    rect rgb(240, 248, 255)
-    note over Store, DB: 1단계: 데이터 수집 및 중앙화
-    Store->>DB: 실시간 재고/판매 데이터 전송 (Sync)
-    end
-
-    rect rgb(255, 245, 230)
-    note over DB, AI: 2단계: AI 분석 및 예측
-    AI->>DB: 현재 재고 및 환경 변수 조회
-    AI->>AI: 🤖 Random Forest 판매량 예측 수행
-    AI->>AI: 📉 실시간 폐기율(EWR) 계산
-    end
-
-    rect rgb(230, 255, 230)
-    note over AI, Auto: 3단계: 트리거 및 마케팅 생성
-    alt EWR > 12% (위험 감지)
-        AI->>Auto: ⚡ 마케팅 프로세스 트리거 발동
-        Auto->>AI: 🗣️ LLM 마케팅 카피 생성 요청 (with JSON 스키마)
-        AI-->>Auto: 개인화된 문구 반환
-    else EWR 안정권
-        AI->>AI: 모니터링 지속 (대기)
-    end
-    end
-
-    rect rgb(250, 240, 255)
-    note over Auto, App: 4단계: 실시간 배포
-    Auto->>DB: 알림 테이블에 데이터 저장 (Insert)
-    DB->>App: 📡 Supabase Realtime 웹소켓 푸시
-    App->>App: 고객 화면에 팝업 노출 🔔
-    end
 
 
 
