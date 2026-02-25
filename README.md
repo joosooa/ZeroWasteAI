@@ -5,7 +5,7 @@
 
 ## 1. Zero Waste AI 시스템 구조 (System Architecture)
 본 프로젝트는 매장 운영부터 고객 접점까지 하나로 연결된 **4단계 통합 아키텍처**로 설계되었습니다.
-<img src="./src/system" width="80%">
+<img src="./src/system.png" width="80%">
 
 
 * **점포경영시스템 (Local)**: 실시간 재고 및 판매 데이터를 생성하고 관리하는 데이터의 원천.
